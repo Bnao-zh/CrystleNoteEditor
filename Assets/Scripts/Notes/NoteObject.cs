@@ -27,7 +27,7 @@ namespace NoteEditor.Notes
         // 定义一个Color类型的变量，用于表示被选中的颜色
         Color selectedStateColor = new Color(255 / 255f, 0 / 255f, 255 / 255f);
         // 定义一个Color类型的变量，用于表示单音符的颜色
-        Color singleNoteColor = new Color(175 / 255f, 255 / 255f, 78 / 255f);
+        Color singleNoteColor = new Color(0 / 255f, 255 / 255f, 255 / 255f);
         // 定义一个Color类型的变量，用于表示长音符的颜色
         Color longNoteColor = new Color(0 / 255f, 255 / 255f, 255 / 255f);
         Color dragNoteColor = new Color(0 / 255f, 255 / 255f, 122 / 255f);
