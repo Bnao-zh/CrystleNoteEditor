@@ -39,10 +39,10 @@ namespace NoteEditor.Presenter
                 .Where(_ => Input.GetMouseButtonDown(1))
                 .Where(_ => 0 <= NoteCanvas.ClosestNotePosition.Value.num);
             closestNoteAreaOnMouseDownObservable
-                .Where(_ => EditState.NoteType.Value == NoteTypes.Single)
+                .Where(_ => EditState.NoteType.Value == NoteTypes.Single || EditState.NoteType.Value == NoteTypes.Drag || EditState.NoteType.Value == NoteTypes.Flick)
                 .Where(_ => !KeyInput.ShiftKey())
                 .Merge(closestNoteAreaOnMouseDownObservable
-                    .Where(_ => EditState.NoteType.Value == NoteTypes.Long))
+                    .Where(_ => EditState.NoteType.Value == NoteTypes.Long || EditState.NoteType.Value == NoteTypes.Dragline))
                 .Subscribe(_ =>
                 {
                     if (EditData.Notes.ContainsKey(NoteCanvas.ClosestNotePosition.Value))
@@ -59,11 +59,11 @@ namespace NoteEditor.Presenter
                                EditState.LongNoteTailPosition.Value));
                     }
                 });
-            
-            closestNoteAreaOnRightMouseDownObservable.Where(_ => EditState.NoteType.Value == NoteTypes.Single)
+
+            closestNoteAreaOnRightMouseDownObservable.Where(_ => EditState.NoteType.Value == NoteTypes.Single || EditState.NoteType.Value == NoteTypes.Drag || EditState.NoteType.Value == NoteTypes.Flick)
                 .Where(_ => !KeyInput.ShiftKey())
                 .Merge(closestNoteAreaOnMouseDownObservable
-                    .Where(_ => EditState.NoteType.Value == NoteTypes.Long))
+                    .Where(_ => EditState.NoteType.Value == NoteTypes.Long || EditState.NoteType.Value == NoteTypes.Dragline))
                 .Subscribe(_ =>
                 {
                     exactTimeDisplay.text = ((float)NoteCanvas.ClosestNotePosition.Value.ToExactTime()).ToString();
@@ -72,7 +72,7 @@ namespace NoteEditor.Presenter
 
             // Start editing of long note
             closestNoteAreaOnMouseDownObservable
-                .Where(_ => EditState.NoteType.Value == NoteTypes.Single)
+                .Where(_ => EditState.NoteType.Value == NoteTypes.Single|| EditState.NoteType.Value == NoteTypes.Drag || EditState.NoteType.Value == NoteTypes.Flick)
                 .Where(_ => KeyInput.ShiftKey())
                 .Do(_ => EditState.NoteType.Value = NoteTypes.Long)
                 .Subscribe(_ => RequestForAddNote.OnNext(
@@ -85,11 +85,11 @@ namespace NoteEditor.Presenter
 
             // Finish editing long note by press-escape or right-click
             this.UpdateAsObservable()
-                .Where(_ => EditState.NoteType.Value == NoteTypes.Long)
+                .Where(_ => EditState.NoteType.Value == NoteTypes.Long || EditState.NoteType.Value == NoteTypes.Dragline)
                 .Where(_ => Input.GetKeyDown(KeyCode.Escape))
                 .Subscribe(_ => EditState.NoteType.Value = NoteTypes.Single);
 
-            var finishEditLongNoteObservable = EditState.NoteType.Where(editType => editType == NoteTypes.Single);
+            var finishEditLongNoteObservable = EditState.NoteType.Where(editType => editType == NoteTypes.Single|| editType == NoteTypes.Drag || editType == NoteTypes.Flick);
 
             finishEditLongNoteObservable.Subscribe(_ => EditState.LongNoteTailPosition.Value = NotePosition.None);
 
@@ -139,6 +139,34 @@ namespace NoteEditor.Presenter
                         ? RequestForRemoveNote
                         : RequestForChangeNoteStatus)
                     .OnNext(noteObject.note);
+                }
+                else if (note.type == NoteTypes.Drag)
+                {
+                    (EditData.Notes.ContainsKey(note.position)
+                        ? RequestForRemoveNote
+                        : RequestForAddNote)
+                    .OnNext(note);
+                }
+                else if (note.type == NoteTypes.Dragline)
+                {
+                    if (!EditData.Notes.ContainsKey(note.position))
+                    {
+                        RequestForAddNote.OnNext(note);
+                        return;
+                    }
+
+                    var noteObject = EditData.Notes[note.position];
+                    (noteObject.note.type == NoteTypes.Dragline
+                        ? RequestForRemoveNote
+                        : RequestForChangeNoteStatus)
+                    .OnNext(noteObject.note);
+                }
+                else if (note.type == NoteTypes.Flick)
+                {
+                    (EditData.Notes.ContainsKey(note.position)
+                        ? RequestForRemoveNote
+                        : RequestForAddNote)
+                    .OnNext(note);
                 }
             });
         }

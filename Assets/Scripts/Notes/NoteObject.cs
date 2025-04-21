@@ -30,6 +30,9 @@ namespace NoteEditor.Notes
         Color singleNoteColor = new Color(175 / 255f, 255 / 255f, 78 / 255f);
         // 定义一个Color类型的变量，用于表示长音符的颜色
         Color longNoteColor = new Color(0 / 255f, 255 / 255f, 255 / 255f);
+        Color dragNoteColor = new Color(0 / 255f, 255 / 255f, 122 / 255f);
+        Color draglineNoteColor = new Color(0 / 255f, 255 / 255f, 122 / 255f);
+        Color flickNoteColor = new Color(255 / 255f, 94 / 255f, 94 / 255f);
         // 定义一个Color类型的变量，用于表示无效状态的颜色
         Color invalidStateColor = new Color(255 / 255f, 0 / 255f, 0 / 255f);
 
@@ -57,8 +60,26 @@ namespace NoteEditor.Notes
             // 当noteType的值不为isSelected的值时，根据noteType的值设置noteColor的值
             disposable.Add(noteType.Where(_ => !isSelected.Value)
                 .Merge(isSelected.Select(_ => noteType.Value))
-                .Select(type => type == NoteTypes.Long)
-                .Subscribe(isLongNote => noteColor_.Value = isLongNote ? longNoteColor : singleNoteColor));
+                .Select(type => type)
+                .Subscribe(type1 => {
+                    switch(type1){
+                        case NoteTypes.Single:
+                            noteColor_.Value = singleNoteColor;
+                            break;
+                        case NoteTypes.Long:
+                            noteColor_.Value = longNoteColor;
+                            break;
+                        case NoteTypes.Drag:
+                            noteColor_.Value = dragNoteColor;
+                            break;
+                        case NoteTypes.Dragline:
+                            noteColor_.Value = draglineNoteColor;
+                            break;
+                        case NoteTypes.Flick:
+                            noteColor_.Value = flickNoteColor;
+                            break;
+                    }
+                    }));
 
             // 当isSelected的值为true时，设置noteColor的值为selectedStateColor
             disposable.Add(isSelected.Where(selected => selected)
@@ -104,6 +125,33 @@ namespace NoteEditor.Notes
                     }
                 }));
 
+            var longNoteUpdateObservable = LateUpdateObservable
+                .Where(_ => noteType.Value == NoteTypes.Long);
+
+            disposable.Add(longNoteUpdateObservable
+                // 监听长音符更新
+                .Where(_ => EditData.Notes.ContainsKey(note.next))
+                // 将长音符转换为画布位置
+                .Select(_ => ConvertUtils.NoteToCanvasPosition(note.next))
+                // 合并长音符
+                .Merge(longNoteUpdateObservable
+                    // 监听类型
+                    .Where(_ => EditState.NoteType.Value == NoteTypes.Long)
+                    // 监听尾部位置
+                    .Where(_ => EditState.LongNoteTailPosition.Value.Equals(note.position))
+                    // 将屏幕位置转换为画布位置
+                    .Select(_ => ConvertUtils.ScreenToCanvasPosition(Input.mousePosition)))
+                // 将画布位置转换为屏幕位置
+                .Select(nextPosition => new Line(
+                    ConvertUtils.CanvasToScreenPosition(ConvertUtils.NoteToCanvasPosition(note.position)),
+                    ConvertUtils.CanvasToScreenPosition(nextPosition),
+                    // 判断是否选中或长音符是否包含下一个音符
+                    isSelected.Value || EditData.Notes.ContainsKey(note.next) && EditData.Notes[note.next].isSelected.Value ? selectedStateColor
+                        // 判断下一个音符的位置是否在长音符的右侧
+                        : 0 < nextPosition.x - ConvertUtils.NoteToCanvasPosition(note.position).x ? longNoteColor : invalidStateColor))
+                // 绘制线段
+                .Subscribe(line => GLLineDrawer.Draw(line)));
+
             disposable.Add(mouseDownObservable.Where(editType => editType == NoteTypes.Drag)
                 .Where(editType => editType == noteType.Value)
                 .Subscribe(_ => editPresenter.RequestForRemoveNote.OnNext(note)));
@@ -137,39 +185,7 @@ namespace NoteEditor.Notes
                     }
                 }));
 
-            disposable.Add(mouseDownObservable.Where(editType => editType == NoteTypes.Flick)
-                .Where(editType => editType == noteType.Value)
-                .Subscribe(_ => editPresenter.RequestForRemoveNote.OnNext(note)));
-
-            // 获取LateUpdateObservable的值，当noteType的值为NoteTypes.Long时，进行长音符的操作
-            var longNoteUpdateObservable = LateUpdateObservable
-                .Where(_ => noteType.Value == NoteTypes.Long);
-
-            // 当EditData.Notes包含note.next的值时，根据note.next的值设置noteColor的值
-            disposable.Add(longNoteUpdateObservable
-                // 监听长音符更新事件
-                .Where(_ => EditData.Notes.ContainsKey(note.next))
-                // 将长音符转换为画布位置
-                .Select(_ => ConvertUtils.NoteToCanvasPosition(note.next))
-                // 合并长音符更新事件
-                .Merge(longNoteUpdateObservable
-                    // 监听长音符类型
-                    .Where(_ => EditState.NoteType.Value == NoteTypes.Long)
-                    // 监听长音符尾部位置
-                    .Where(_ => EditState.LongNoteTailPosition.Value.Equals(note.position))
-                    // 将屏幕位置转换为画布位置
-                    .Select(_ => ConvertUtils.ScreenToCanvasPosition(Input.mousePosition)))
-                // 将画布位置转换为屏幕位置
-                .Select(nextPosition => new Line(
-                    ConvertUtils.CanvasToScreenPosition(ConvertUtils.NoteToCanvasPosition(note.position)),
-                    ConvertUtils.CanvasToScreenPosition(nextPosition),
-                    // 判断是否选中或长音符是否包含下一个音符
-                    isSelected.Value || EditData.Notes.ContainsKey(note.next) && EditData.Notes[note.next].isSelected.Value ? selectedStateColor
-                        // 判断下一个音符的位置是否在长音符的右侧
-                        : 0 < nextPosition.x - ConvertUtils.NoteToCanvasPosition(note.position).x ? longNoteColor : invalidStateColor))
-                // 绘制线段
-                .Subscribe(line => GLLineDrawer.Draw(line)));
-
+            // 获取LateUpdateObservable的值，当noteType的值为NoteTypes.Dragline时，进行长音符的操作
             var drawlineNoteUpdateObservable = LateUpdateObservable
             .Where(_ => noteType.Value == NoteTypes.Dragline);
 
@@ -194,9 +210,13 @@ namespace NoteEditor.Notes
                     // 判断是否选中或长音符是否包含下一个音符
                     isSelected.Value || EditData.Notes.ContainsKey(note.next) && EditData.Notes[note.next].isSelected.Value ? selectedStateColor
                         // 判断下一个音符的位置是否在长音符的右侧
-                        : 0 < nextPosition.x - ConvertUtils.NoteToCanvasPosition(note.position).x ? longNoteColor : invalidStateColor))
+                        : 0 < nextPosition.x - ConvertUtils.NoteToCanvasPosition(note.position).x ? draglineNoteColor : invalidStateColor))
                 // 绘制线段
                 .Subscribe(line => GLLineDrawer.Draw(line)));
+
+            disposable.Add(mouseDownObservable.Where(editType => editType == NoteTypes.Flick)
+                .Where(editType => editType == noteType.Value)
+                .Subscribe(_ => editPresenter.RequestForRemoveNote.OnNext(note)));
         }
 
         // 移除链接的方法
@@ -226,8 +246,8 @@ namespace NoteEditor.Notes
         // 设置状态的方法
         public void SetState(Note note)
         {
-            // 如果note.type的值为NoteTypes.Single，则移除链接
-            if (note.type == NoteTypes.Single && note.type == NoteTypes.Drag && note.type == NoteTypes.Flick)
+            // 如果note.type的值为NoteTypes.Single、NoteTypes.Drag或NoteTypes.Flick，则移除链接
+            if (note.type == NoteTypes.Single || note.type == NoteTypes.Drag || note.type == NoteTypes.Flick)
             {
                 RemoveLink();
             }
@@ -236,7 +256,7 @@ namespace NoteEditor.Notes
             this.note = note;
 
             // 如果note.type的值为NoteTypes.Long，则插入链接
-            if (note.type == NoteTypes.Long && note.type == NoteTypes.Dragline)
+            if (note.type == NoteTypes.Long || note.type == NoteTypes.Dragline)
             {
                 InsertLink(note.position);
                 // 设置EditState.LongNoteTailPosition的值为note.position或NotePosition.None

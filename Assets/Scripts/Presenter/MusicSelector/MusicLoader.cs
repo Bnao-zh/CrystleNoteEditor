@@ -65,7 +65,7 @@ namespace NoteEditor.Presenter
             EditState.LongNoteTailPosition.Value = NotePosition.None;
             EditData.BPM.Value = 120;
             EditData.OffsetSamples.Value = 0;
-            EditData.Name.Value = "Note Editor";
+            EditData.Name.Value = "Crystle Note Editor";
             EditData.MaxBlock.Value = Settings.MaxBlock;
             EditData.LPB.Value = 4;
 

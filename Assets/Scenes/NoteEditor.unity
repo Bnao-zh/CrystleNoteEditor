@@ -2674,7 +2674,7 @@ MonoBehaviour:
   iconFlickNotes: {fileID: 21300000, guid: 93f5daa36b8b4164589efa6c72e56c0d, type: 3}
   longTypeStateButtonColor: {r: 0, g: 1, b: 1, a: 1}
   singleTypeStateButtonColor: {r: 0.75686276, g: 0.7647059, b: 0.7529412, a: 1}
-  dragTypeStateButtonColor: {r: 0, g: 1, b: 0.47555637, a: 1}
+  dragTypeStateButtonColor: {r: 0, g: 1, b: 0.47843137, a: 1}
   draglineTypeStateButtonColor: {r: 0, g: 1, b: 0.47843137, a: 1}
   flickTypeStateButtonColor: {r: 1, g: 0.3679244, b: 0.3679244, a: 1}
 --- !u!1 &304772956
@@ -12959,7 +12959,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Note Editor
+  m_Text: Crystle Note Editor
 --- !u!222 &1882975967
 CanvasRenderer:
   m_ObjectHideFlags: 0

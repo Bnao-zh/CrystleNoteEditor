@@ -86,8 +86,8 @@ namespace NoteEditor.Model
             // 遍历EditData中的notes
             foreach (var note in editData.notes)
             {
-                // 如果note.type为1或3，则将其转换为NoteObject并添加到notePresenter中
-                if (note.type == 1 && note.type == 3 && note.type == 5)
+                // 根据note.type的值，将note转换为NoteObject并添加到notePresenter中
+                if (note.type == 1 || note.type == 3 || note.type == 5)
                 {
                     notePresenter.AddNote(ToNoteObject(note));
                     continue;
@@ -121,7 +121,24 @@ namespace NoteEditor.Model
             note.block = noteObject.note.position.block;
             note.LPB = noteObject.note.position.LPB;
             note.exactTime = 60.0 / BPM / noteObject.note.position.LPB * (noteObject.note.position.num - 1);
-            note.type = noteObject.note.type == NoteTypes.Long ? 2 : 1;
+            switch (noteObject.note.type)
+            {
+                case NoteTypes.Single:
+                    note.type = 1;
+                    break;
+                case NoteTypes.Long:
+                    note.type = 2;
+                    break;
+                case NoteTypes.Drag:
+                    note.type = 3;
+                    break;
+                case NoteTypes.Dragline:
+                    note.type = 4;
+                    break;
+                case NoteTypes.Flick:
+                    note.type = 5;
+                    break;
+            }
             note.notes = new List<MusicDTO.Note>();
             return note;
         }
@@ -131,9 +148,7 @@ namespace NoteEditor.Model
         {
             // 创建Note对象，传入NotePosition和NoteTypes参数
             return new Note(
-                // 创建NotePosition对象，传入LPB、num和block参数
                 new NotePosition(musicNote.LPB, musicNote.num, musicNote.block),
-                // 根据musicNote.type的值，返回NoteTypes枚举值
                 musicNote.type switch
                 {
                     1 => NoteTypes.Single,
