@@ -1,4 +1,4 @@
 ﻿namespace NoteEditor.Notes
 {
-    public enum NoteTypes { Single, Long }
+    public enum NoteTypes { Single, Long, Drag, Dragline, Flick}
 }
