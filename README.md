@@ -1,9 +1,9 @@
-# Note Editor [![license](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](https://github.com/setchi/NoteEditor/blob/master/LICENSE) [![Release](https://img.shields.io/github/release/setchi/NoteEditor.svg?style=flat-square&logo=github)](https://github.com/setchi/NoteEditor/releases/latest)
+# Crystle Note Editor [![license](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](https://github.com/setchi/NoteEditor/blob/master/LICENSE) 
 
-音乐游戏的谱面编辑器
+Crystle的自制谱面编辑器
 支持wav与ogg格式.
 
-![screenshot2](https://github.com/stevesensei/NoteEditor/assets/32810212/3e2828ea-ae71-465a-a162-5df2f86f443e)
+![screenshot2](https://github.com/Bnao-zh/CrystleNoteEditor/blob/main/screenshot2.png?raw=true)
 
 
 ## 操作列表
@@ -41,7 +41,7 @@
 
 ## 开发环境
 
-Unity 2022.1.5f1
+Unity 2022.3.40f1c1
 
 ## LICENSE
 
