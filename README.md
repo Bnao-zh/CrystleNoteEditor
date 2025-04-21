@@ -45,4 +45,4 @@ Unity 2022.3.40f1c1
 
 ## LICENSE
 
-[MIT](https://github.com/setchi/NoteEditor/blob/master/LICENSE)
+[MIT](https://github.com/Bnao-zh/CrystleNoteEditor/blob/main/LICENSE)
