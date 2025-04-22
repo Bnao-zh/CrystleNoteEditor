@@ -14,8 +14,8 @@ namespace NoteEditor.DTO
             return new SettingsDTO
             {
                 workSpacePath = "",
-                maxBlock = 5,
-                noteInputKeyCodes = new List<int> { 114, 99, 103, 121, 98 }
+                maxBlock = 7,
+                noteInputKeyCodes = new List<int> { 81, 87, 69, 82, 84, 89, 85 }
             };
         }
     }
