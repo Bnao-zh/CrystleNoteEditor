@@ -1,5 +1,6 @@
 ﻿using NoteEditor.Model;
 using NoteEditor.Utility;
+using System;
 using System.IO;
 using System.Linq;
 using UniRx;
@@ -119,6 +120,7 @@ namespace NoteEditor.Presenter
             }
 
             var json = EditDataSerializer.Serialize();
+            Debug.Log("保存数据：" + json);
             File.WriteAllText(filePath, json, System.Text.Encoding.UTF8);
             messageText.text = filePath + " 保存成功";
         }

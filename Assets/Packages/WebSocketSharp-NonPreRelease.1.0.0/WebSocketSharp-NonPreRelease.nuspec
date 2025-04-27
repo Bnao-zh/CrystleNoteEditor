@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>WebSocketSharp-NonPreRelease</id>
+    <version>1.0.0</version>
+    <authors>sta, swiftyspiffy (cole)</authors>
+    <owners>sta, swiftyspiffy (cole)</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>https://raw.github.com/sta/websocket-sharp/master/LICENSE.txt</licenseUrl>
+    <projectUrl>https://github.com/sta/websocket-sharp</projectUrl>
+    <iconUrl>https://raw.github.com/sta/websocket-sharp/master/websocket-sharp_icon.png</iconUrl>
+    <description>This is the dll found in 1.0.3-rc11 of the original project, although it is not flagged as prerelease by NuGet which should allow using it as a dependency without flagging your own library as a pre release.</description>
+    <releaseNotes>This is the dll found in 1.0.3-rc11 of the original project, although it is not flagged as prerelease by NuGet which should allow using it as a dependency without flagging your own library as a pre release.</releaseNotes>
+    <copyright>© 2010-2016 sta.blockhead</copyright>
+    <tags>WebSocket non pre release</tags>
+    <dependencies />
+  </metadata>
+</package>

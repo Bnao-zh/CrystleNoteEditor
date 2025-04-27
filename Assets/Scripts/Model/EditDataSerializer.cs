@@ -4,6 +4,7 @@ using NoteEditor.Presenter;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnityEngine;
 
 namespace NoteEditor.Model
 {
@@ -11,6 +12,7 @@ namespace NoteEditor.Model
     {
         public static string Serialize()
         {
+            Debug.Log("开始序列化数据");
             var dto = new MusicDTO.EditData();
             dto.BPM = EditData.BPM.Value;
             dto.maxBlock = EditData.MaxBlock.Value;
@@ -22,59 +24,33 @@ namespace NoteEditor.Model
                 .OrderBy(note => note.note.position.ToSamples(Audio.Source.clip.frequency, EditData.BPM.Value));
 
             dto.notes = new List<MusicDTO.Note>();
-
+            
             foreach (var noteObject in sortedNoteObjects)
             {
-                if (noteObject.note.type == NoteTypes.Single)
-                {
-                    dto.notes.Add(ToDTO(noteObject, EditData.BPM.Value));
-                }
-                else if (noteObject.note.type == NoteTypes.Long)
-                {
-                    var current = noteObject;
-                    var note = ToDTO(noteObject, EditData.BPM.Value);
+               var note = ToDTO(noteObject, EditData.BPM.Value);
 
+               if (noteObject.note.type == NoteTypes.Long || noteObject.note.type == NoteTypes.Dragline)
+               {
+                  var current = noteObject;
                     while (EditData.Notes.ContainsKey(current.note.next))
                     {
-                        var nextObj = EditData.Notes[current.note.next];
+                       var nextObj = EditData.Notes[current.note.next];
                         note.notes.Add(ToDTO(nextObj, EditData.BPM.Value));
                         current = nextObj;
                     }
+                }
 
-                    dto.notes.Add(note);
-                }
-                else if (noteObject.note.type == NoteTypes.Drag)
-                {
-                    dto.notes.Add(ToDTO(noteObject, EditData.BPM.Value));
-                }
-                else if (noteObject.note.type == NoteTypes.Dragline)
-                {
-                    var current = noteObject;
-                    var note = ToDTO(noteObject, EditData.BPM.Value);
-
-                    while (EditData.Notes.ContainsKey(current.note.next))
-                    {
-                        var nextObj = EditData.Notes[current.note.next];
-                        note.notes.Add(ToDTO(nextObj, EditData.BPM.Value));
-                        current = nextObj;
-                    }
-
-                    dto.notes.Add(note);
-                }
-                else if (noteObject.note.type == NoteTypes.Flick)
-                {
-                    dto.notes.Add(ToDTO(noteObject, EditData.BPM.Value));
-                }
+                dto.notes.Add(note);
             }
 
-            return UnityEngine.JsonUtility.ToJson(dto);
+            return JsonUtility.ToJson(dto);
         }
 
         // 将json字符串反序列化为MusicDTO.EditData对象
         public static void Deserialize(string json)
         {
             // 从json字符串中反序列化出EditData对象
-            var editData = UnityEngine.JsonUtility.FromJson<MusicDTO.EditData>(json);
+            var editData = JsonUtility.FromJson<MusicDTO.EditData>(json);
             // 获取EditNotesPresenter的实例
             var notePresenter = EditNotesPresenter.Instance;
 
