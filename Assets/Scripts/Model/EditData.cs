@@ -8,7 +8,7 @@ namespace NoteEditor.Model
     public class EditData : SingletonMonoBehaviour<EditData>
     {
         ReactiveProperty<string> name_ = new ReactiveProperty<string>();
-        ReactiveProperty<int> maxBlock_ = new ReactiveProperty<int>(5);
+        ReactiveProperty<int> maxBlock_ = new ReactiveProperty<int>(9);
         ReactiveProperty<int> LPB_ = new ReactiveProperty<int>(4);
         ReactiveProperty<int> BPM_ = new ReactiveProperty<int>(120);
         ReactiveProperty<int> offsetSamples_ = new ReactiveProperty<int>(0);
