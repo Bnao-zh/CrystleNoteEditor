@@ -1,7 +1,8 @@
-# Crystle Note Editor [![license](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](https://github.com/setchi/NoteEditor/blob/master/LICENSE) 
+# Crystle Note Editor [![license](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](https://github.com/Bnao-zh/CrystleNoteEditor/blob/main/LICENSE) 
 
 Crystle的自制谱面编辑器
 支持wav与ogg格式.
+支持WebSocket获取信息.
 
 ![screenshot2](https://github.com/Bnao-zh/CrystleNoteEditor/blob/main/screenshot2.png?raw=true)
 
@@ -38,6 +39,17 @@ Crystle的自制谱面编辑器
 | note样式切换  | Alt         |
 | 编辑长note   | Shift + Alt |
 | 取消编辑长note | 右键 / Esc    |
+
+## WebSocket服务器(未完成)
+启动制谱器时会自动监听`ws://localhost:4649/SimCrySocket`
+连接上后发送消息获取对应内容
+
+### 发送的消息
+
+| 发送消息        | 服务端返回       |
+|:--------- |:----------- |
+| {type:"getchart"}  | 当前正在编辑的谱面数据  |
+| {type:"info"}   | 当前所在的时间或其他信息 |
 
 ## 开发环境
 
