@@ -4,12 +4,14 @@ using NoteEditor.Presenter;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace NoteEditor.Model
 {
     public class EditDataSerializer
     {
+        // 将EditData对象序列化为json字符串
         public static string Serialize()
         {
             Debug.Log("开始序列化数据");
@@ -24,17 +26,17 @@ namespace NoteEditor.Model
                 .OrderBy(note => note.note.position.ToSamples(Audio.Source.clip.frequency, EditData.BPM.Value));
 
             dto.notes = new List<MusicDTO.Note>();
-            
+
             foreach (var noteObject in sortedNoteObjects)
             {
-               var note = ToDTO(noteObject, EditData.BPM.Value);
+                var note = ToDTO(noteObject, EditData.BPM.Value);
 
-               if (noteObject.note.type == NoteTypes.Long || noteObject.note.type == NoteTypes.Dragline)
-               {
-                  var current = noteObject;
+                if (noteObject.note.type == NoteTypes.Long || noteObject.note.type == NoteTypes.Dragline)
+                {
+                    var current = noteObject;
                     while (EditData.Notes.ContainsKey(current.note.next))
                     {
-                       var nextObj = EditData.Notes[current.note.next];
+                        var nextObj = EditData.Notes[current.note.next];
                         note.notes.Add(ToDTO(nextObj, EditData.BPM.Value));
                         current = nextObj;
                     }

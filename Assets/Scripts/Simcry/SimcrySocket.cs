@@ -1,4 +1,3 @@
-using System;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 using Newtonsoft.Json;
@@ -31,7 +30,6 @@ public class SimCrySocketServer : WebSocketBehavior
             }
             else
             {
-                // 如果type不是getchart，返回type键为null的json
                 var response = JsonConvert.SerializeObject(new { type = (string)null });
                 Send(response);
             }
@@ -45,13 +43,10 @@ public class SimcrySocket : MonoBehaviour
 
     void Start()
     {
-        // 设置WebSocket服务器的端口
         wssv = new WebSocketServer(4649);
 
-        // 添加服务
         wssv.AddWebSocketService<SimCrySocketServer>("/SimCrySocket");
 
-        // 开始监听
         wssv.Start();
         Debug.Log("WebSocket服务器已启动");
     }
