@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using UnityEngine;
 using NoteEditor.Model;
-
+using NoteEditor.Presenter;
 public class SimCrySocketServer : WebSocketBehavior
 {
     protected override void OnOpen()
@@ -24,8 +24,15 @@ public class SimCrySocketServer : WebSocketBehavior
             if (jsonMessage.ContainsKey("type") && jsonMessage["type"] == "getchart")
             {
                 Debug.Log("接收到getchart请求");
-                var response = EditDataSerializer.Serialize();
-                Debug.Log("发送数据：" + response);
+                var response = EditDataSerializer.Serializesocket();
+                Debug.Log("成功发送Chart数据");
+                Send(response);
+            }
+            else if (jsonMessage.ContainsKey("type") && jsonMessage["type"] == "getinfo")
+            {
+                Debug.Log("接收到getinfo请求");
+                var response = JsonConvert.SerializeObject(new { time = Audio.TimeSamples.Value / 44100f });
+                Debug.Log("成功发送info数据");
                 Send(response);
             }
             else

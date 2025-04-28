@@ -63,7 +63,7 @@ namespace NoteEditor.Presenter
 
             mustBeSaved.SubscribeToText(messageText, unsaved => unsaved ? "请注意保存" : "");
 
-            saveActionObservable.Subscribe(_ => Save2());
+            saveActionObservable.Subscribe(_ => Save());
 
             dialogSaveButton.AddListener(
                 EventTriggerType.PointerClick,
@@ -120,15 +120,8 @@ namespace NoteEditor.Presenter
             }
 
             var json = EditDataSerializer.Serialize();
-            Debug.Log("保存数据：" + json);
             File.WriteAllText(filePath, json, System.Text.Encoding.UTF8);
             messageText.text = filePath + " 保存成功";
-        }
-
-        public void Save2()
-        {
-            var json = EditDataSerializer.Serialize();
-            Debug.Log("保存数据：" + json);
         }
     }
 }

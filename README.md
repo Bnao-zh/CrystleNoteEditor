@@ -40,7 +40,7 @@ Crystle的自制谱面编辑器
 | 编辑长note   | Shift + Alt |
 | 取消编辑长note | 右键 / Esc    |
 
-## WebSocket服务器(未完成)
+## WebSocket服务器
 启动制谱器时会自动监听`ws://localhost:4649/SimCrySocket`
 连接上后发送消息获取对应内容
 
@@ -49,7 +49,7 @@ Crystle的自制谱面编辑器
 | 发送消息        | 服务端返回       |
 |:--------- |:----------- |
 | {type:"getchart"}  | 当前正在编辑的谱面数据  |
-| {type:"info"}   | 当前所在的时间或其他信息 |
+| {type:"getinfo"}   | 当前所在的时间或其他信息 |
 
 ## 开发环境
 

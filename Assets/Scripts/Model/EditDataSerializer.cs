@@ -25,10 +25,18 @@ namespace NoteEditor.Model
                 .Where(note => !(note.note.type == NoteTypes.Long && EditData.Notes.ContainsKey(note.note.prev)))
                 .OrderBy(note => note.note.position.ToSamples(Audio.Source.clip.frequency, EditData.BPM.Value));
 
-            dto.notes = new List<MusicDTO.Note>();
+            //List<NoteObject> sortedNoteObjects = new List<NoteObject>(EditData.Notes.Values.Where(note => !(note.note.type == NoteTypes.Long && EditData.Notes.ContainsKey(note.note.prev))));
 
+            // List<NoteObject> sortedNoteObjects = new List<NoteObject>();
+            // foreach (NoteObject iN in EditData.Notes.Values) if (!(iN.note.type == NoteTypes.Long && EditData.Notes.ContainsKey(iN.note.prev))) sortedNoteObjects.Add(iN);
+            // //sortedNoteObjects.Sort((a, b) => a.note.position.ToSamples(Audio.Source.clip.frequency, EditData.BPM.Value).CompareTo(b.note.position.ToSamples(Audio.Source.clip.frequency, EditData.BPM.Value)));
+
+
+            dto.notes = new List<MusicDTO.Note>();
+            Debug.Log(new List<NoteObject>(sortedNoteObjects)[0]);
             foreach (var noteObject in sortedNoteObjects)
             {
+                Debug.Log("成功第一步");
                 var note = ToDTO(noteObject, EditData.BPM.Value);
 
                 if (noteObject.note.type == NoteTypes.Long || noteObject.note.type == NoteTypes.Dragline)
@@ -47,6 +55,53 @@ namespace NoteEditor.Model
 
             return JsonUtility.ToJson(dto);
         }
+
+        public static string Serializesocket()
+        {
+            Debug.Log("开始序列化数据");
+            var dto = new MusicDTO.EditData();
+            dto.BPM = EditData.BPM.Value;
+            dto.maxBlock = EditData.MaxBlock.Value;
+            dto.offset = EditData.OffsetSamples.Value;
+            dto.name = Path.GetFileNameWithoutExtension(EditData.Name.Value);
+
+            /*
+            var sortedNoteObjects = EditData.Notes.Values
+                .Where(note => !(note.note.type == NoteTypes.Long && EditData.Notes.ContainsKey(note.note.prev)))
+                .OrderBy(note => note.note.position.ToSamples(Audio.Source.clip.frequency, EditData.BPM.Value));
+            */
+
+            //List<NoteObject> sortedNoteObjects = new List<NoteObject>(EditData.Notes.Values.Where(note => !(note.note.type == NoteTypes.Long && EditData.Notes.ContainsKey(note.note.prev))));
+
+            List<NoteObject> sortedNoteObjects = new List<NoteObject>();
+            foreach (NoteObject iN in EditData.Notes.Values) if (!((iN.note.type == NoteTypes.Long || iN.note.type == NoteTypes.Dragline) && EditData.Notes.ContainsKey(iN.note.prev))) sortedNoteObjects.Add(iN);
+            //sortedNoteObjects.Sort((a, b) => a.note.position.ToSamples(Audio.Source.clip.frequency, EditData.BPM.Value).CompareTo(b.note.position.ToSamples(Audio.Source.clip.frequency, EditData.BPM.Value)));
+
+
+            dto.notes = new List<MusicDTO.Note>();
+            Debug.Log(new List<NoteObject>(sortedNoteObjects)[0]);
+            foreach (var noteObject in sortedNoteObjects)
+            {
+                Debug.Log("成功第一步");
+                var note = ToDTO(noteObject, EditData.BPM.Value);
+
+                if (noteObject.note.type == NoteTypes.Long || noteObject.note.type == NoteTypes.Dragline)
+                {
+                    var current = noteObject;
+                    while (EditData.Notes.ContainsKey(current.note.next))
+                    {
+                        var nextObj = EditData.Notes[current.note.next];
+                        note.notes.Add(ToDTO(nextObj, EditData.BPM.Value));
+                        current = nextObj;
+                    }
+                }
+
+                dto.notes.Add(note);
+            }
+
+            return JsonUtility.ToJson(dto);
+        }
+
 
         // 将json字符串反序列化为MusicDTO.EditData对象
         public static void Deserialize(string json)
