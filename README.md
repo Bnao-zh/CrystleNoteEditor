@@ -41,7 +41,7 @@ Crystle的自制谱面编辑器
 | 取消编辑长note | 右键 / Esc    |
 
 ## WebSocket服务器(未完成)
-启动制谱器时会自动监听\`ws://localhost:4649/SimCrySocket\`
+启动制谱器时会自动监听`ws://localhost:4649/SimCrySocket`
 连接上后发送消息获取对应内容
 
 ### 发送的消息
